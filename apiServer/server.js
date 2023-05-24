@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const mysql      = require('mysql');
 const connection = mysql.createConnection({
-  host     : 'localhost',
+  host     : 'ls-414dd39cdb7215ba67853172200804032eca5c10.cjlhhn5kbuqa.ap-northeast-2.rds.amazonaws.com',
   user     : 'root',
   password : '00000000',
   database : 'dogListApi'
