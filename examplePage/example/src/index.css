@@ -1,12 +1,12 @@
 body {
     width: 500px;
-    height: 100vh;
+    /* height: 120vh; */
     margin: auto;
   }
   
 .Main {
   width: 500px;
-  height: 100vh;
+  /* height: 100vh; */
   background-color: #E8E8E8;
 }
 .Header{
@@ -88,6 +88,8 @@ body {
   height: 120px;
   border-radius: 5px;
   background-color: white;
+  background-image: url(https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png);
+  background-size: cover;
 }
 .DogListContentWrite{
   width: 300px;

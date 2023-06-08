@@ -1,5 +1,5 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React, {useEffect, useState} from 'react';
+import ReactDOM from 'react-dom/client';
 import './index.css';
 
 class Header extends React.Component {
@@ -43,24 +43,25 @@ class FilterButtonCover extends React.Component {
 }
 function DogListContent(props){
   return <div className="DogListContent">
-    <div className='DogListContentImage'>{props.image}</div>
+    <div className='DogListContentImage'></div>
     <div className='DogListContentWrite'>{props.date},{props.age},{props.location}</div>
   </div>
 ;
 }
 
-class DogListCover extends React.Component {
-  render() {
-    return (
-      <div className="DogListCover">
+function DogListCover(){
+    useEffect(()=>{
+      setTimeout(()=>{
+        console.log('hi')
+      },1000)
+    },[]);
+
+    return <div className="DogListCover">
         <DogListContent image='image1' date='date1' age='age1' location='location1' />
         <DogListContent image='image2' date='date2' age='age2' location='location2' />
         <DogListContent image='image3' date='date3' age='age3' location='location3' />
         <DogListContent image='image4' date='date4' age='age4' location='location4' />
-      
       </div>
-    );
-  }
 }
 
 
