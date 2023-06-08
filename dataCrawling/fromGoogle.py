@@ -6,7 +6,6 @@ import json
 
 driver = webdriver.Chrome()
 result = []
-
 def zooseyo():
   result = []
   pageNo = 1
