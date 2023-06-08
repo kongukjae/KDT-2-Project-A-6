@@ -64,7 +64,7 @@ def main():
     try:
       zooseyoCrawler.goUrl(f'https://www.zooseyo.or.kr/Yu_board/{i}')
       time.sleep(4)
-      resultList.append({'imageLink':zooseyoCrawler.getImageInfo(),'date':zooseyoCrawler.getDateInfo(),'breed':zooseyoCrawler.getBreedInfo(),'gender':zooseyoCrawler.getGenderInfo(),'location':zooseyoCrawler.getLocationInfo(),'mainText':zooseyoCrawler.getMainTextInfo()})
+      resultList.append({'imageLink':zooseyoCrawler.getImageInfo(),'date':zooseyoCrawler.getDateInfo(),'breed':zooseyoCrawler.getBreedInfo(),'gender':zooseyoCrawler.getGenderInfo(),'location':zooseyoCrawler.getLocationInfo(),'mainText':zooseyoCrawler.getMainTextInfo(),'webLink':f'https://www.zooseyo.or.kr/Yu_board/{i}'})
     except:
       continue
   zooseyoCrawler.saveJson(resultList)

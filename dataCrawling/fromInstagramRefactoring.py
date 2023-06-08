@@ -28,16 +28,23 @@ class InstaCrawler:
   def getTextInfo(self):
     mainTextTag = self.driver.find_elements(By.TAG_NAME,'h1')
     time.sleep(1)
-    return mainTextTag[0].text
+    try:
+      return mainTextTag[0].text
+    except:
+      return 'none'
   def getDateInfo(self):
     timeTag = self.driver.find_elements(By.TAG_NAME,'time')
     return timeTag[0].get_attribute('datetime')
-
+  
+  
   def getImageInfo(self):
     headerTag = self.driver.find_elements(By.TAG_NAME,'header')
     result=headerTag[1].get_property('parentElement').get_property('parentElement').get_property('parentElement').get_property('parentElement').get_property('parentElement').get_property('previousSibling').find_element(By.TAG_NAME,'img').get_attribute('src')
     time.sleep(2)
     return result
+  def getCurrentUrl(self):
+    url = self.driver.current_url
+    return url
   def gotoNext(self):
     svgList = self.driver.find_elements(By.TAG_NAME, 'svg')
     time.sleep(2)
@@ -60,15 +67,23 @@ def main():
   instaCrawler.search("유기견입양")
   instaCrawler.getFirstPost()
 
-  for _ in range(10):
+  for _ in range(100):
     resultDict = {}
     resultDict["mainText"] = instaCrawler.getTextInfo()
-    resultDict["date"] = instaCrawler.getDateInfo()
-    resultDict["imageLink"] = instaCrawler.getImageInfo()
-    resultList.append(resultDict)
-    instaCrawler.gotoNext()
+    if len(resultDict["mainText"]) < 50:
+      instaCrawler.gotoNext()
+      continue
+    try:
+      resultDict["date"] = instaCrawler.getDateInfo()
+      resultDict["imageLink"] = instaCrawler.getImageInfo()
+      resultDict["webLink"] = instaCrawler.getCurrentUrl()
+      resultList.append(resultDict)
+      instaCrawler.gotoNext()
+    except:
+      instaCrawler.gotoNext()
   print(resultList)
   instaCrawler.saveJson(resultList)
 
 if __name__ == '__main__':
   main()
+  
