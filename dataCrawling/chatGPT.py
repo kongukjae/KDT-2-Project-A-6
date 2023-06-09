@@ -2,7 +2,7 @@ import openai
 
 
 def chatGPT(ask):
-    openai.api_key = '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'
+    openai.api_key = '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'
     response = openai.Completion.create(
       engine="text-davinci-003",
       prompt=ask,
@@ -11,7 +11,7 @@ def chatGPT(ask):
     )
     return response.choices[0].text.strip()
 def chatGPTTurbo(ask):
-    openai.api_key = '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'
+    openai.api_key = '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'
     response = openai.ChatCompletion.create(
       model="gpt-3.5-turbo",
       messages=[

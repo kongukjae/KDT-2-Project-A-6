@@ -7,7 +7,6 @@ class TextGuess:
     def __init__(self):
          pass
     def jsonOpen(self, directory):
-        # print(chatGPT('안녕'))
         with open(directory, "r") as f:
             data = json.load(f)
         return data
@@ -56,7 +55,18 @@ class TextGuess:
     def jsonSave(self,directory,result):
         with open(directory, "w") as f:
             json.dump(result, f, ensure_ascii=False,indent=4)
-
+    def dateFrom(self, value):
+        result = ''
+        for i in value:
+            if i.isdigit():
+                result += i
+            if len(result) == 4:
+                result += '-'
+            if len(result) == 7:
+                result += '-'
+            if len(result) == 10:
+                break
+        return result
 def zooseyo():
     zooseyoTextGuess= TextGuess()
     jsonData = zooseyoTextGuess.jsonOpen("resultFromZooseyo.json")
@@ -64,8 +74,25 @@ def zooseyo():
     zooseyoTextGuess.jsonSave('resultFromZooseyoAddInfo.json',ageAppend)
 def insta():
     instaTextGuess = TextGuess()
-    jsonData = instaTextGuess.jsonOpen("resultFromInstagram.json")
-    trueCheck = instaTextGuess.trueGuess(jsonData)
-    infoAppend = instaTextGuess.ageLocGenGuess(trueCheck)
+    jsonData = instaTextGuess.jsonOpen("resultFromInstagramFiltering.json")
+    # trueCheck = instaTextGuess.trueGuess(jsonData)
+    infoAppend = instaTextGuess.ageLocGenGuess(jsonData)
     instaTextGuess.jsonSave('resultFromInstagramAddInfo.json',infoAppend)
-insta()
+def changeDate():
+    change = TextGuess()
+    jsonData = change.jsonOpen('resultFromInstagramAddInfo.json')
+    for i in jsonData:
+        i['date'] = change.dateFrom(i['date'])
+    change.jsonSave('resultFromInstagramAddInfo.json', jsonData)
+    jsonData = change.jsonOpen('resultFromZooseyoAddInfo.json')
+    for i in jsonData:
+        i['date'] = change.dateFrom(i['date'])
+    change.jsonSave('resultFromZooseyoAddInfo.json', jsonData)
+    jsonData = change.jsonOpen('resultFromGovernmentAPI.json')
+    for i in jsonData:
+        i['date'] = change.dateFrom(i['date'])
+    change.jsonSave('resultFromGovernmentAPI.json', jsonData)
+
+if __name__ == '__main__':
+    # insta()
+    changeDate()
