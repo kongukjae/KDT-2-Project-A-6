@@ -11,7 +11,7 @@ const connection = mysql.createConnection({
 connection.connect();
 app.get('/list', function (req, res) {
     let targetQuery = req.query;
-    let column = ['date','age','location','idx'];
+    let column = ['date','location','idx','breed','age','dataFrom'];
     let targetKey = Object.keys(targetQuery);
     let selectQuery = 'SELECT * FROM dogList';
     let whereQuery = 'WHERE ';
@@ -23,7 +23,7 @@ app.get('/list', function (req, res) {
             if(whereQuery.length>6){
                 whereQuery += ' AND '
             }
-            if(targetKey[i]==='age' || targetKey[i]==='idx'){
+            if(targetKey[i]==='idx'){
                 whereQuery += targetKey[i] + '='
                 whereQuery += targetQuery[targetKey[i]]
             }else{
