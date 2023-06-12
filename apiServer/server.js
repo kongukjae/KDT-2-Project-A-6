@@ -63,6 +63,7 @@ app.get('/list', function (req, res) {
     if(whereFlag){
         selectQuery += " " + whereQuery;
     };
+    selectQuery += ' ORDER BY date desc'
     if(numOfRowsFlag && numOfPageFlag){
         selectQuery += " " + `LIMIT ${numOfPage * numOfRows - 1} , ${numOfRows}`;
     }else if(numOfPageFlag){
@@ -71,9 +72,9 @@ app.get('/list', function (req, res) {
         selectQuery += " " + `LIMIT ${numOfRows}`;
     }else{
         selectQuery += " " + "LIMIT 1000";
-    }
+    } 
     
-    connection.query(selectQuery + ' ORDER BY date desc', (error, rows, fields) => {
+    connection.query(selectQuery, (error, rows, fields) => {
         if (error) throw error;
         console.log(rows);
         res.send(JSON.stringify(rows)); 
