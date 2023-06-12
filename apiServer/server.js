@@ -71,7 +71,7 @@ app.get('/list', function (req, res) {
         }
     };
     
-    connection.query(selectQuery + 'ORDER BY date desc', (error, rows, fields) => {
+    connection.query(selectQuery + ' ORDER BY date desc', (error, rows, fields) => {
         if (error) throw error;
         console.log(rows);
         res.send(JSON.stringify(rows)); 
