@@ -24,12 +24,13 @@ app.get('/list', function (req, res) {
 
     for(let i = 0; i<targetKey.length;i++){
         if(column.includes(targetKey[i])){
-            whereFlag = true
+
             console.log(targetKey[i],targetQuery[targetKey[i]])
             if(whereQuery.length>6){
                 whereQuery += ' AND '
             }
             if(targetKey[i]==='idx'){
+                whereFlag = true
                 whereQuery += targetKey[i] + '='
                 whereQuery += targetQuery[targetKey[i]]
             }else if(targetKey[i]==='numOfRows'){
@@ -53,6 +54,7 @@ app.get('/list', function (req, res) {
                     console.log('typeErr');
                 }
             }else{
+                whereFlag = true
                 whereQuery += targetKey[i] + '='
                 whereQuery += '"'+targetQuery[targetKey[i]]+'"'
             }
