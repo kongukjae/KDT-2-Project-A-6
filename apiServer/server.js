@@ -34,15 +34,21 @@ app.get('/list', function (req, res) {
                 whereQuery += targetQuery[targetKey[i]]
             }else if(targetKey[i]==='numOfRows'){
                 try{
-                    numOfRows = Number(targetKey[i]);
+                    numOfRows = Number(targetQuery[targetKey[i]]);
                     numOfRowsFlag = true;
+                    if(numOfRows == NaN){
+                        throw new Error('type Error')
+                    }
                 }catch(error){
                     console.log('typeErr');
                 }
             }else if(targetKey[i]==='numOfPage'){
                 try{
-                    numOfPage = Number(targetKey[i]);
+                    numOfPage = Number(targetQuery[targetKey[i]]);
                     numOfPageFlag = true;
+                    if(numOfpage == NaN){
+                        throw new Error('type Error')
+                    }
                 }catch(error){
                     console.log('typeErr');
                 }
