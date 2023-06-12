@@ -11,11 +11,17 @@ const connection = mysql.createConnection({
 connection.connect();
 app.get('/list', function (req, res) {
     let targetQuery = req.query;
-    let column = ['date','location','idx','breed','age','dataFrom'];
+    let column = ['date','location','idx','breed','age','dataFrom','numOfRows','numOfPage'];
     let targetKey = Object.keys(targetQuery);
     let selectQuery = 'SELECT * FROM dogList';
     let whereQuery = 'WHERE ';
     let whereFlag = false;
+    let numOfRows = 0;
+    let numOfPage = 0;
+    let numOfRowsFlag = false;
+    let numOfPageFlag = false;
+
+
     for(let i = 0; i<targetKey.length;i++){
         if(column.includes(targetKey[i])){
             whereFlag = true
@@ -26,6 +32,20 @@ app.get('/list', function (req, res) {
             if(targetKey[i]==='idx'){
                 whereQuery += targetKey[i] + '='
                 whereQuery += targetQuery[targetKey[i]]
+            }else if(targetKey[i]==='numOfRows'){
+                try{
+                    numOfRows = Number(targetKey[i]);
+                    numOfRowsFlag = true;
+                }catch(error){
+                    console.log('typeErr');
+                }
+            }else if(targetKey[i]==='numOfPage'){
+                try{
+                    numOfPage = Number(targetKey[i]);
+                    numOfPageFlag = true;
+                }catch(error){
+                    console.log('typeErr');
+                }
             }else{
                 whereQuery += targetKey[i] + '='
                 whereQuery += '"'+targetQuery[targetKey[i]]+'"'
@@ -34,6 +54,15 @@ app.get('/list', function (req, res) {
     }
     if(whereFlag){
         selectQuery += " " + whereQuery;
+        if(numOfRowsFlag && numOfPageFlag){
+            selectQuery += " " + `LIMIT ${numOfPage * numOfRows - 1} , ${numOfRows}`;
+        }else if(numOfPageFlag){
+            selectQuery += " " + `LIMIT ${numOfPage * 1000 - 1} , 1000`;
+        }else if(numOfRowsFlag){
+            selectQuery += " " + `LIMIT ${numOfRows}`;
+        }else{
+            selectQuery += " " + "LIMIT 1000";
+        }
     };
     
     connection.query(selectQuery, (error, rows, fields) => {
