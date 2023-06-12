@@ -62,16 +62,16 @@ app.get('/list', function (req, res) {
     }
     if(whereFlag){
         selectQuery += " " + whereQuery;
-        if(numOfRowsFlag && numOfPageFlag){
-            selectQuery += " " + `LIMIT ${numOfPage * numOfRows - 1} , ${numOfRows}`;
-        }else if(numOfPageFlag){
-            selectQuery += " " + `LIMIT ${numOfPage * 1000 - 1} , 1000`;
-        }else if(numOfRowsFlag){
-            selectQuery += " " + `LIMIT ${numOfRows}`;
-        }else{
-            selectQuery += " " + "LIMIT 1000";
-        }
     };
+    if(numOfRowsFlag && numOfPageFlag){
+        selectQuery += " " + `LIMIT ${numOfPage * numOfRows - 1} , ${numOfRows}`;
+    }else if(numOfPageFlag){
+        selectQuery += " " + `LIMIT ${numOfPage * 1000 - 1} , 1000`;
+    }else if(numOfRowsFlag){
+        selectQuery += " " + `LIMIT ${numOfRows}`;
+    }else{
+        selectQuery += " " + "LIMIT 1000";
+    }
     
     connection.query(selectQuery + ' ORDER BY date desc', (error, rows, fields) => {
         if (error) throw error;
