@@ -57,9 +57,11 @@ function DogListContent(props : propsType){
 
 function DogListCover(){
     useEffect(()=>{
-      setTimeout(()=>{
-        console.log('hi')
-      },1000)
+      fetch('http://43.201.52.54:2080/list?numOfRows=4')
+        .then(response => response.json())
+        .then((result) =>{
+          console.log(result)
+        });
     },[]);
 
     return <div className="DogListCover">
