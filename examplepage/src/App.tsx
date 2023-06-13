@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './App.css';
 
 class Header extends React.Component {
@@ -45,30 +45,67 @@ interface propsType {
   age:string;
   location:string;
   image:string;
+  webLink : string;
+  breed : string
 }
 
 function DogListContent(props : propsType){
+  const imageDiv = useRef<HTMLInputElement>(null);
+  useEffect(()=>{
+    if(imageDiv.current !== null){
+      imageDiv.current.style.backgroundImage = `url(${props.image})`
+      imageDiv.current.addEventListener('click',()=>{
+        window.open(props.webLink)
+      })
+    }
+  });
   return <div className="DogListContent">
-    <div className='DogListContentImage'></div>
-    <div className='DogListContentWrite'>{props.date},{props.age},{props.location}</div>
+    <div className='DogListContentImage' ref={imageDiv}></div>
+    <div className = 'DogListContentWirteWrap'>
+      <div className='DogListContentWrite'>{props.breed}</div>
+      <div className='DogListContentWrite'>{props.age}</div>
+      <div className='DogListContentWrite'>{props.location}</div>
+      <div className='DogListContentDate'>{props.date.slice(0,10)}</div>
+    </div>
   </div>
 ;
 }
 
 function DogListCover(){
-    useEffect(()=>{
-      fetch('http://43.201.52.54:2080/list?numOfRows=4')
+    const [dogList, setDogList] = useState<any[]>([])
+    const lastEnd = useRef<HTMLInputElement>(null);
+    var numOfPage = 1
+    // useEffect(()=>{
+    //   // fetch('http://43.201.52.54:2080/list?numOfRows=4')
+    //   fetch('http://localhost:2080/list?numOfRows=10')
+    //     .then(response => response.json())
+    //     .then((result) =>{
+    //       setDogList(result);
+    //       console.log(result)
+    //       console.log('hi')
+
+    //     });
+    // },[]);
+    function bringNewData(){
+      fetch(`http://localhost:2080/list?numOfRows=5&numOfPage=${numOfPage}`)
         .then(response => response.json())
         .then((result) =>{
-          console.log(result)
+          setDogList((prev)=>[...prev, ...result]);
+          numOfPage += 1;
+          console.log(numOfPage)
         });
+    }
+    useEffect(()=>{
+      const observer = new IntersectionObserver(bringNewData)
+      if(lastEnd.current !== null){
+        observer.observe(lastEnd.current)
+      }
+      return () => observer.disconnect()
     },[]);
-
+    const dogComponent : JSX.Element[] = dogList.map((currentDog)=> <DogListContent image={currentDog.imageLink} date={currentDog.date}  age={currentDog.age} location={currentDog.location} webLink={currentDog.webLink} breed={currentDog.breed}/>)
     return <div className="DogListCover">
-        <DogListContent image='image1' date='date1' age='age1' location='location1' />
-        <DogListContent image='image2' date='date2' age='age2' location='location2' />
-        <DogListContent image='image3' date='date3' age='age3' location='location3' />
-        <DogListContent image='image4' date='date4' age='age4' location='location4' />
+        {dogComponent}
+        <div className='IntersectionObserver' ref={lastEnd}></div>
       </div>
 }
 
