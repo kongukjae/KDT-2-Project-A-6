@@ -8,14 +8,14 @@ app.use(cors({
 
 const mysql      = require('mysql');
 const connection = mysql.createConnection({
-  host     : 'localhost',
+  host     : 'ls-414dd39cdb7215ba67853172200804032eca5c10.cjlhhn5kbuqa.ap-northeast-2.rds.amazonaws.com',
   user     : 'root',
   password : '00000000',
   database : 'dogListApi'
 });
+
 connection.connect();
 app.get('/list', function (req, res) {
-    console.time('데이터 조회 시간');
     let targetQuery = req.query;
     let column = ['date','location','idx','breed','age','dataFrom','numOfRows','numOfPage'];
     let targetKey = Object.keys(targetQuery);
@@ -84,7 +84,6 @@ app.get('/list', function (req, res) {
         if (error) throw error;
         console.log(rows);
         res.send(JSON.stringify(rows)); 
-        console.timeEnd('데이터 조회 시간');
     });
 
 }); 
