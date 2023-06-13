@@ -1,0 +1,27 @@
+{
+    "config": {
+       "target": "http://localhost:2080",
+       "phases": [
+          {
+             "duration": 10,
+             "arrivalRate": 10
+          }
+       ]
+    },
+    "scenarios": [
+       {
+          "flow": [
+             {
+                "get": {
+                   "url": "/list?numOfRows=10&numOfPage=1"
+                }
+             },
+             {
+                "get": {
+                   "url": "/list?numOfRows=10&numOfPage=2"
+                }
+             }
+          ]
+       }
+    ]
+ }
