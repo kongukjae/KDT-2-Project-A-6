@@ -1,6 +1,25 @@
 import React, {useState, useEffect, useRef} from 'react';
 import './App.css';
 
+function RootWrap(){
+  const [targetUrl, setTargetUrl] = useState<string>('')
+  const [dogList, setDogList] = useState<any[]>([])
+  const changeDogList: React.Dispatch<React.SetStateAction<any[]>> = (value) => {
+    setDogList(value);
+  };
+  const changeSearch = (value:string):void => {
+    setTargetUrl(value);
+    return;
+  };
+  return <div className="Main">
+    <Header />
+    <SearchBarCover search={changeSearch} setDogList={changeDogList}/>
+    <FilterButtonCover/>
+    <DogListCover search={targetUrl} dogList={dogList} setDogList={changeDogList} />
+  </div>
+;
+}
+
 class Header extends React.Component {
   render() {
     return (
@@ -10,14 +29,36 @@ class Header extends React.Component {
     );
   }
 }
-class SearchBarCover extends React.Component {
-  render() {
-    return (
-      <div className="SearchBarCover">
-        <input type='text' placeholder='검색' className='SearchBar'/>
-      </div>
-    );
-  }
+interface propsTypeSearchBarCover {
+  search: (value: string) => void;
+  setDogList: React.Dispatch<React.SetStateAction<any[]>>;
+}
+function SearchBarCover(props : propsTypeSearchBarCover){
+  const searchBar = useRef<HTMLInputElement>(null);
+  useEffect(()=>{
+    searchBar.current?.addEventListener('keyup',function(e){
+      if(e.key==='Enter'){
+        if(typeof(searchBar.current?.value)==='string'){
+          props.search(searchBar.current?.value)
+          console.log('search :' + searchBar.current?.value)
+          fetch(`http://localhost:2080/list?numOfRows=100&numOfPage=1&search=${props.search}`)
+          .then(response => response.json())
+          .then((result) =>{
+            props.setDogList((prev) => [...result]);
+          });
+        }else{
+          alert('유효한 값을 입력해주세요')
+        }
+      }
+    }
+    )
+    // props.search('123')  
+  },[])
+  
+  return <div className="SearchBarCover">
+  <input type='text' placeholder='검색' className='SearchBar' ref={searchBar}/>
+</div>
+;
 }
 class FilterButton extends React.Component {
   render() {
@@ -40,7 +81,7 @@ class FilterButtonCover extends React.Component {
     );
   }
 }
-interface propsType {
+interface propsTypedogListContent {
   date:string;
   age:string;
   location:string;
@@ -49,7 +90,7 @@ interface propsType {
   breed : string
 }
 
-function DogListContent(props : propsType){
+function DogListContent(props : propsTypedogListContent){
   const imageDiv = useRef<HTMLInputElement>(null);
   useEffect(()=>{
     if(imageDiv.current !== null){
@@ -70,39 +111,41 @@ function DogListContent(props : propsType){
   </div>
 ;
 }
+interface propsTypeDogListCover {
+  search:string;
+  dogList:any[];
+  setDogList: React.Dispatch<React.SetStateAction<any[]>>;
+}
+function DogListCover(props:propsTypeDogListCover){
 
-function DogListCover(){
-    const [dogList, setDogList] = useState<any[]>([])
     const lastEnd = useRef<HTMLInputElement>(null);
     var numOfPage = 1
-    // useEffect(()=>{
-    //   // fetch('http://43.201.52.54:2080/list?numOfRows=4')
-    //   fetch('http://localhost:2080/list?numOfRows=10')
-    //     .then(response => response.json())
-    //     .then((result) =>{
-    //       setDogList(result);
-    //       console.log(result)
-    //       console.log('hi')
+    let urlResult = `http://localhost:2080/list?numOfRows=5&numOfPage=${numOfPage}`
 
-    //     });
-    // },[]);
-    function bringNewData(){
-      fetch(`http://localhost:2080/list?numOfRows=5&numOfPage=${numOfPage}`)
-        .then(response => response.json())
-        .then((result) =>{
-          setDogList((prev)=>[...prev, ...result]);
-          numOfPage += 1;
-          console.log(numOfPage)
-        });
-    }
     useEffect(()=>{
-      const observer = new IntersectionObserver(bringNewData)
+      function bringNewData(url:string):void{
+        numOfPage += 1;
+        if(props.search !== ''){
+          urlResult = `http://localhost:2080/list?numOfRows=100&numOfPage=${numOfPage}&search=${props.search}`
+        }else{
+          urlResult = `http://localhost:2080/list?numOfRows=5&numOfPage=${numOfPage}`
+        }
+        console.log(props.search)
+        console.log(url)
+        fetch(url)
+          .then(response => response.json())
+          .then((result) =>{
+            props.setDogList((prev) => [...prev, ...result]);
+            console.log(numOfPage)     
+          });
+      }
+      const observer = new IntersectionObserver(()=>{bringNewData(urlResult)})
       if(lastEnd.current !== null){
         observer.observe(lastEnd.current)
       }
-      return () => observer.disconnect()
-    },[]);
-    const dogComponent : JSX.Element[] = dogList.map((currentDog)=> <DogListContent image={currentDog.imageLink} date={currentDog.date}  age={currentDog.age} location={currentDog.location} webLink={currentDog.webLink} breed={currentDog.breed}/>)
+      // return () => observer.disconnect()
+    },[props.search]);
+    const dogComponent : JSX.Element[] =props.dogList.map((currentDog)=> <DogListContent image={currentDog.imageLink} date={currentDog.date}  age={currentDog.age} location={currentDog.location} webLink={currentDog.webLink} breed={currentDog.breed}/>)
     return <div className="DogListCover">
         {dogComponent}
         <div className='IntersectionObserver' ref={lastEnd}></div>
@@ -115,12 +158,7 @@ function DogListCover(){
 
 function App() {
   return (
-    <div className="Main">
-      <Header />
-      <SearchBarCover/>
-      <FilterButtonCover/>
-      <DogListCover />
-    </div>
+    <RootWrap />
   );
 }
 
