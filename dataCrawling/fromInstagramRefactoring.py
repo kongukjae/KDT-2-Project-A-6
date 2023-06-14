@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 import time
 import json
+import changeJsonData
 
 class InstaCrawler:
   def __init__(self):
@@ -50,10 +51,19 @@ class InstaCrawler:
     time.sleep(2)
     nextTarget = None
     for i in svgList:
-      if i.get_attribute('aria-label') == '다음':
-        nextTarget = i.get_property('parentElement').get_property('parentElement').get_property('parentElement')
-        break
-    nextTarget.click()
+      try:
+        if i.get_attribute('aria-label') == '다음':
+          nextTarget = i.get_property('parentElement').get_property('parentElement').get_property('parentElement')
+          break
+      except:
+        pass
+    if nextTarget is not None:
+      try:
+        nextTarget.click()
+      except:
+        self.gotoNext()
+    else:
+      self.gotoNext()
     time.sleep(2)
   def saveJson(self, resultList):
     with open('./resultFromInstagram.json','w') as f:
@@ -67,7 +77,8 @@ def main():
   instaCrawler.search("유기견입양")
   instaCrawler.getFirstPost()
 
-  for _ in range(100):
+  for _ in range(500):
+    print(_)
     resultDict = {}
     resultDict["mainText"] = instaCrawler.getTextInfo()
     if len(resultDict["mainText"]) < 50:
@@ -85,5 +96,6 @@ def main():
   instaCrawler.saveJson(resultList)
 
 if __name__ == '__main__':
-  main()
-  
+  # main()
+  changeJsonData.insta()
+  changeJsonData.changeDateInstagram()

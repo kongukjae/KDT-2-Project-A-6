@@ -15,7 +15,7 @@ con = pymysql.connect(host='localhost', user='root', password='00000000',db='dog
 # STEP 3: Connection 으로부터 Cursor 생성
 cur = con.cursor()
 
-targetList = ['resultFromGovernmentAPI.json','resultFromInstagramAddInfo.json','resultFromZooseyoAddInfo.json']
+targetList = ['resultFromGovernmentAPI.json','resultFromInstagramAddInfoTest.json','resultFromZooseyoAddInfo.json']
 
 for j in range(len(targetList)):
     target = jsonOpen(targetList[j])
