@@ -3,7 +3,7 @@
        "target": "http://localhost:2080",
        "phases": [
           {
-             "duration": 10,
+             "duration": 60,
              "arrivalRate": 10
           }
        ]
@@ -13,12 +13,12 @@
           "flow": [
              {
                 "get": {
-                   "url": "/list?numOfRows=10&numOfPage=1"
+                   "url": "/list?search=대전&numOfRows=7000"
                 }
              },
              {
                 "get": {
-                   "url": "/list?numOfRows=10&numOfPage=2"
+                   "url": "/list?search=남아&numOfRows=7000"
                 }
              }
           ]
