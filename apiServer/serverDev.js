@@ -5,6 +5,25 @@ app.use(cors({
     origin: '*',
 }));
 
+function includeCheck(targetText, keyWord){
+    includeFlag = false
+    targetTextArray = targetText.split('')
+    keyWordArray = keyWord.split('')
+    stackList = []
+    for(let i of targetTextArray){
+        if(i === keyWordArray[stackList.length]){
+            stackList.push(i)
+        }else{
+            stackList = []
+        }
+        if(keyWordArray.length === stackList.length){
+            includeFlag = true
+            break
+
+        }
+    }
+    return includeFlag
+}
 
 const mysql      = require('mysql');
 const connection = mysql.createConnection({
@@ -14,10 +33,13 @@ const connection = mysql.createConnection({
   database : 'dogListApi'
 });
 connection.connect();
+app.get('/image/:filename',function(req,res){
+    res.sendFile( __dirname + '/images/instagram/' + req.params['filename'])
+})
+
 app.get('/list', function (req, res) {
-    console.time('데이터 조회 시간');
     let targetQuery = req.query;
-    let column = ['date','location','idx','breed','age','dataFrom','numOfRows','numOfPage'];
+    let column = ['date','location','idx','breed','age','dataFrom','numOfRows','numOfPage','search'];
     let targetKey = Object.keys(targetQuery);
     let selectQuery = 'SELECT * FROM dogList';
     let whereQuery = 'WHERE ';
@@ -26,6 +48,8 @@ app.get('/list', function (req, res) {
     let numOfPage = 0;
     let numOfRowsFlag = false;
     let numOfPageFlag = false;
+    let searchFlag = false;
+    let searchKeyWord = '';
 
 
     for(let i = 0; i<targetKey.length;i++){
@@ -59,10 +83,13 @@ app.get('/list', function (req, res) {
                 }catch(error){
                     console.log('typeErr');
                 }
+            }else if(targetKey[i]==='search'){
+                searchFlag = true;
+                searchKeyWord = targetQuery[targetKey[i]]
             }else{
-                whereFlag = true
-                whereQuery += targetKey[i] + '='
-                whereQuery += '"'+targetQuery[targetKey[i]]+'"'
+                whereFlag = true;
+                whereQuery += targetKey[i] + '=';
+                whereQuery += '"'+targetQuery[targetKey[i]]+'"';
             }
         };
     }
@@ -83,8 +110,26 @@ app.get('/list', function (req, res) {
     connection.query(selectQuery, (error, rows, fields) => {
         if (error) throw error;
         console.log(rows);
-        res.send(JSON.stringify(rows)); 
-        console.timeEnd('데이터 조회 시간');
+        if(searchFlag){
+            let checkList = [];
+            // let roopFlag = false
+            for(let i of rows){
+                for(let j of Object.values(i)){
+                    if(includeCheck(String(j),searchKeyWord)){
+                        // roopFlag = true;
+                        checkList.push(i);
+                        break
+                    }
+                }
+                // if(roopFlag){
+                //     break
+                // }
+            }
+            res.send(JSON.stringify(checkList)); 
+        }else{
+            res.send(JSON.stringify(rows)); 
+        }
+        
     });
 
 }); 
