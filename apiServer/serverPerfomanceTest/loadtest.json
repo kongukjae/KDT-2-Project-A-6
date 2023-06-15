@@ -13,12 +13,12 @@
           "flow": [
              {
                 "get": {
-                   "url": "/list?search=대전&numOfRows=7000"
+                   "url": "/listVer2?search=대전"
                 }
              },
              {
                 "get": {
-                   "url": "/list?search=남아&numOfRows=7000"
+                   "url": "/listVer2?search=남아"
                 }
              }
           ]
