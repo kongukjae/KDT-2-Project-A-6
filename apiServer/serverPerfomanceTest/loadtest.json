@@ -1,0 +1,27 @@
+{
+    "config": {
+       "target": "http://localhost:2080",
+       "phases": [
+          {
+             "duration": 60,
+             "arrivalRate": 10
+          }
+       ]
+    },
+    "scenarios": [
+       {
+          "flow": [
+             {
+                "get": {
+                   "url": "/listVer2?search=대전"
+                }
+             },
+             {
+                "get": {
+                   "url": "/listVer2?search=남아"
+                }
+             }
+          ]
+       }
+    ]
+ }

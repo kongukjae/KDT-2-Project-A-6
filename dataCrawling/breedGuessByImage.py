@@ -25,16 +25,17 @@ def jsonSave(directory,result):
     with open(directory, "w") as f:
         json.dump(result, f, ensure_ascii=False,indent=4)
 
-targetImageLink = jsonOpen('resultFromInstagram.json')
+targetImageLink = jsonOpen('resultFromInstagramAddInfo copy.json')
 result = []
 for i in targetImageLink:
     url = i["imageLink"]
+    if url != None:
     # request.urlopen()
-    res = request.urlopen(url).read()
+        res = request.urlopen(url).read()
 
-    # Image open
-    img = Image.open(BytesIO(res))
-    predictResult = pred_img(img)
-    i['breed'] = 'AI예측 : ' + predictResult
-    result.append(i)
-jsonSave('resultFromInstagramAddBreed.json',result)
+        # Image open
+        img = Image.open(BytesIO(res))
+        predictResult = pred_img(img)
+        i['breed'] = 'AI예측 : ' + predictResult
+        result.append(i)
+jsonSave('resultFromInstagramAddInfo.json',result)

@@ -34,12 +34,15 @@ class TextGuess:
     def trueGuess(self, data):
         result = []
         for i in data:
-            askGPT = chatGPTTurbo("다음 게시 글을 읽고 강아지 분양글인지 판단해줘. 맞으면 True, 틀리면 False 로 True/False 형식으로 해줘. 게시글 : " + i['mainText'])
-            # askGPT = i['mainText']
-            print(i['mainText'])
-            print(askGPT)
-            if askGPT == "True":
-                result.append(i)
+            try:
+                askGPT = chatGPTTurbo("다음 게시 글을 읽고 강아지 분양글인지 판단해줘. 맞으면 True, 틀리면 False 로 True/False 형식으로 해줘. 게시글 : " + i['mainText'])
+                # askGPT = i['mainText']
+                print(i['mainText'])
+                print(askGPT)
+                if askGPT == "True":
+                    result.append(i)
+            except:
+                pass
         return result
     def ageLocGenGuess(self, data):
         result = []
@@ -47,10 +50,13 @@ class TextGuess:
             askGPT = chatGPTTurbo("해당 유기견 입양 게시글을 읽고 강아지 나이, 분양 지역, 강아지 성별을 추론해줘  결과를 강아지 나이, 분양 지역, 강아지 성별 3가지를 각각 'age', 'location','gender'를 키 값으로 가지는 JSON형식으로 알려줘. 만약 추론이 불가능하다면 해당 key값의 value를 '추측 불가'로 넣어도 돼. 게시글 :  " + i['mainText'])
             # askGPT = i['mainText']
             print(askGPT)
-            jsonObject = json.loads(askGPT)
-            for j in jsonObject:
-                i[j] = 'chatGPT : ' + jsonObject[j]
-            result.append(i)
+            try:
+                jsonObject = json.loads(askGPT)
+                for j in jsonObject:
+                    i[j] = 'chatGPT : ' + jsonObject[j]
+                result.append(i)
+            except:
+                pass
         return result
     def jsonSave(self,directory,result):
         with open(directory, "w") as f:
@@ -74,25 +80,31 @@ def zooseyo():
     zooseyoTextGuess.jsonSave('resultFromZooseyoAddInfo.json',ageAppend)
 def insta():
     instaTextGuess = TextGuess()
-    jsonData = instaTextGuess.jsonOpen("resultFromInstagramFiltering.json")
-    # trueCheck = instaTextGuess.trueGuess(jsonData)
-    infoAppend = instaTextGuess.ageLocGenGuess(jsonData)
+    jsonData = instaTextGuess.jsonOpen("resultFromInstagram.json")
+    trueCheck = instaTextGuess.trueGuess(jsonData)
+    instaTextGuess.jsonSave('resultFromInstagramFiltering.json',trueCheck)
+    infoAppend = instaTextGuess.ageLocGenGuess(trueCheck)
     instaTextGuess.jsonSave('resultFromInstagramAddInfo.json',infoAppend)
-def changeDate():
+def changeDateInstagram():
     change = TextGuess()
     jsonData = change.jsonOpen('resultFromInstagramAddInfo.json')
     for i in jsonData:
         i['date'] = change.dateFrom(i['date'])
     change.jsonSave('resultFromInstagramAddInfo.json', jsonData)
+def changeDateZooseyo():
+    change = TextGuess()
     jsonData = change.jsonOpen('resultFromZooseyoAddInfo.json')
     for i in jsonData:
         i['date'] = change.dateFrom(i['date'])
     change.jsonSave('resultFromZooseyoAddInfo.json', jsonData)
+
+def changeDateGovernmentAPI():
+    change = TextGuess()
     jsonData = change.jsonOpen('resultFromGovernmentAPI.json')
     for i in jsonData:
         i['date'] = change.dateFrom(i['date'])
     change.jsonSave('resultFromGovernmentAPI.json', jsonData)
 
 if __name__ == '__main__':
-    # insta()
-    changeDate()
+    insta()
+    changeDateInstagram()
