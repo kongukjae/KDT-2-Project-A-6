@@ -10,7 +10,7 @@ app.use(cors({
 app.use(express.static(path.join(__dirname, '../examplepage/build')));
 
 app.get('/', function (req, res) {
-  req.sendFile(path.join(__dirname, '../examplepage/build/index.html'));
+  res.sendFile(path.join(__dirname, '../examplepage/build/index.html'));
 });
 
 function includeCheck(targetText, keyWord){
