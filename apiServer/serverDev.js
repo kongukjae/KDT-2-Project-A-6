@@ -63,7 +63,7 @@ app.get('/listVer3', function (req, res) {
     for(let i = 0; i<targetKey.length;i++){
         if(column.includes(targetKey[i])){
 
-            console.log(targetKey[i],targetQuery[targetKey[i]])
+            // console.log(targetKey[i],targetQuery[targetKey[i]])
             if(andFlag){
                 whereQuery += ' AND '
             }
@@ -99,10 +99,21 @@ app.get('/listVer3', function (req, res) {
                     whereQuery += 'idx=0'
                 }else{
                     searchQuery += '( '
-                    // for(let i = 0;i<targetIndex.length - 1;i++){
-                    //     searchQuery += `idx=${targetIndex[i]} OR `
-                    // }
-                    // searchQuery += `idx=${targetIndex[targetIndex.length - 1]} )`
+                    let targetIndexArray = []
+                    console.log(targetIndex)
+                    for(let i of targetIndex){
+                        for(let j of searchIndex[i]){
+                            if(!targetIndexArray.includes(j)){
+                                targetIndexArray.push(j)
+
+                            }
+                        }
+                    }
+                    for(let i = 0;i<targetIndexArray.length - 1;i++){
+                        searchQuery += `idx=${targetIndexArray[i]} OR `
+                    }
+                    searchQuery += `idx=${targetIndexArray[targetIndexArray.length-1]} )`
+                    console.log(targetIndexArray);
                     whereQuery += searchQuery;
                 }
             }else{
@@ -153,7 +164,7 @@ app.get('/listVer2', function (req, res) {
     for(let i = 0; i<targetKey.length;i++){
         if(column.includes(targetKey[i])){
 
-            console.log(targetKey[i],targetQuery[targetKey[i]])
+            // console.log(targetKey[i],targetQuery[targetKey[i]])
             if(andFlag){
                 whereQuery += ' AND '
             }
@@ -245,7 +256,7 @@ app.get('/list', function (req, res) {
     for(let i = 0; i<targetKey.length;i++){
         if(column.includes(targetKey[i])){
 
-            console.log(targetKey[i],targetQuery[targetKey[i]])
+            // console.log(targetKey[i],targetQuery[targetKey[i]])
             if(whereQuery.length>6){
                 whereQuery += ' AND '
             }
