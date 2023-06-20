@@ -29,9 +29,9 @@ function SearchBarCover(props : propsTypeSearchBarCover){
         if(typeof(searchBar.current?.value)==='string'){
           props.setMoreInfoButtonFirstTime(true);
           let searchKey = searchBar.current.value;
-          props.setTargetUrl(['http://localhost:2080/listVer2?numOfRows=10&numOfPage=',`&search=${searchKey}`])
+          props.setTargetUrl(['http://43.201.52.54:2080/listVer2?numOfRows=10&numOfPage=',`&search=${searchKey}`])
           console.log('search :' + searchBar.current?.value)
-          fetch(`http://localhost:2080/listVer2?numOfRows=10&numOfPage=1&search=${searchKey}`)
+          fetch(`http://43.201.52.54:2080/listVer2?numOfRows=10&numOfPage=1&search=${searchKey}`)
           .then(response => response.json())
           .then((result) =>{
             props.setDogList(result);
@@ -141,7 +141,7 @@ function DogListCover(props:propsTypeDogListCover){
       let searchQuery = props.targetUrl[1]
       props.setMoreInfoButtonFirstTime(false)
       console.log(searchQuery)
-      fetch('http://localhost:2080/listVer3?numOfRows=10&numOfPage=1' + searchQuery)
+      fetch('http://43.201.52.54:2080/listVer3?numOfRows=10&numOfPage=1' + searchQuery)
             .then(response => response.json())
             .then((result) =>{
               props.setDogList((prev) => [...prev, ...result]);
@@ -149,7 +149,7 @@ function DogListCover(props:propsTypeDogListCover){
                 setMoreInfoButton(true)
               }
             });
-      props.setTargetUrl(['http://localhost:2080/listVer3?numOfRows=10&numOfPage=',searchQuery])
+      props.setTargetUrl(['http://43.201.52.54:2080/listVer3?numOfRows=10&numOfPage=',searchQuery])
       setMoreInfoButton(false)
     };
 
@@ -162,7 +162,7 @@ function DogListCover(props:propsTypeDogListCover){
 }
 
 function RootWrap(){
-  const [targetUrl, setTargetUrl] = useState<any[]>(['http://localhost:2080/listVer2?numOfRows=10&numOfPage=',''])
+  const [targetUrl, setTargetUrl] = useState<any[]>(['http://43.201.52.54:2080/listVer2?numOfRows=10&numOfPage=',''])
   const [dogList, setDogList] = useState<any[]>([])
   const [moreInfoButtonFirstTime,setMoreInfoButtonFirstTime] = useState(true)
   const changeDogList: React.Dispatch<React.SetStateAction<any[]>> = (value) => {
