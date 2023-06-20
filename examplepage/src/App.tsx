@@ -2,19 +2,23 @@ import React, {useState, useEffect, useRef} from 'react';
 import './App.css';
 import { count } from 'console';
 
-class Header extends React.Component {
-  render() {
-    return (
-      <div className="Header">
-        유기견 모아보기
+function Header(){
+    const header = useRef<HTMLInputElement>(null);
+    useEffect(()=>{
+      header.current?.addEventListener('click',()=>{
+        window.location.reload();
+      })
+    },[])
+    return <div className="Header" ref={header}>
+        유기견 검색엔진
       </div>
-    );
-  }
+   
 }
 
 interface propsTypeSearchBarCover {
   setTargetUrl:  React.Dispatch<React.SetStateAction<any[]>>;
   setDogList: React.Dispatch<React.SetStateAction<any[]>>;
+  setMoreInfoButtonFirstTime: React.Dispatch<React.SetStateAction<any>>;
 }
 
 function SearchBarCover(props : propsTypeSearchBarCover){
@@ -23,6 +27,7 @@ function SearchBarCover(props : propsTypeSearchBarCover){
     searchBar.current?.addEventListener('keyup',function(e){
       if(e.key==='Enter'){
         if(typeof(searchBar.current?.value)==='string'){
+          props.setMoreInfoButtonFirstTime(true);
           let searchKey = searchBar.current.value;
           props.setTargetUrl(['http://localhost:2080/listVer2?numOfRows=10&numOfPage=',`&search=${searchKey}`])
           console.log('search :' + searchBar.current?.value)
@@ -46,29 +51,6 @@ function SearchBarCover(props : propsTypeSearchBarCover){
 ;
 }
 
-
-
-class FilterButtonCover extends React.Component {
-  render() {
-    return (
-      <div className="FilterButtonCover">
-        <FilterButton/>
-        <FilterButton/>
-        <FilterButton/>
-        <div className='FilterEndGap'></div>
-      </div>
-    );
-  }
-}
-
-class FilterButton extends React.Component {
-  render() {
-    return (
-      <div className="FilterButton">
-      </div>
-    );
-  }
-}
 
 interface propsTypedogListContent {
   date:string;
@@ -106,15 +88,24 @@ interface propsTypeDogListCover {
   targetUrl:any[];
   dogList:any[];
   setDogList: React.Dispatch<React.SetStateAction<any[]>>;
+  setMoreInfoButtonFirstTime: React.Dispatch<React.SetStateAction<any>>;
+  moreInfoButtonFirstTime: boolean;
 }
 function DogListCover(props:propsTypeDogListCover){
     const lastEnd = useRef<HTMLInputElement>(null);
+    const [moreInfoButton,setMoreInfoButton] = useState(false)
+    
+
 
     useEffect(()=>{
-      fetch(`http://localhost:2080/listVer2?numOfRows=10&numOfPage=1`)
+      let url : any = props.targetUrl[0] + '1'
+      fetch(url)
           .then(response => response.json())
           .then((result) =>{
             props.setDogList(result);
+            if(result.length === 0){
+              setMoreInfoButton(true)
+            }
           });
     },[])
     useEffect(()=>{
@@ -129,22 +120,43 @@ function DogListCover(props:propsTypeDogListCover){
             .then(response => response.json())
             .then((result) =>{
               props.setDogList((prev) => [...prev, ...result]);
+              if(result.length === 0){
+                setMoreInfoButton(true)
+              }
             });
           console.log(numOfPage)
           console.log(props.targetUrl)
           numOfPage += 1;
         }
       }
+      
+
       const observer = new IntersectionObserver((entries)=>{bringNewData(entries)})
       if(lastEnd.current !== null){
         observer.observe(lastEnd.current)
       }
       return () => observer.disconnect()
     },[props.targetUrl])
+    const moreInfoClick = () => {
+      let searchQuery = props.targetUrl[1]
+      props.setMoreInfoButtonFirstTime(false)
+      console.log(searchQuery)
+      fetch('http://localhost:2080/listVer3?numOfRows=10&numOfPage=1' + searchQuery)
+            .then(response => response.json())
+            .then((result) =>{
+              props.setDogList((prev) => [...prev, ...result]);
+              if(result.length === 0){
+                setMoreInfoButton(true)
+              }
+            });
+      props.setTargetUrl(['http://localhost:2080/listVer3?numOfRows=10&numOfPage=',searchQuery])
+      setMoreInfoButton(false)
+    };
 
     const dogComponent : JSX.Element[] =props.dogList.map((currentDog, index)=> <DogListContent key={index} image={currentDog.imageLink} date={currentDog.date}  age={currentDog.age} location={currentDog.location} webLink={currentDog.webLink} breed={currentDog.breed}/>)
     return <div className="DogListCover">
         {dogComponent}
+        { moreInfoButton && props.moreInfoButtonFirstTime ? <div className='moreInfoButton' onClick={moreInfoClick}>더 많은 검색 결과 보기</div> : null }
         <div className='IntersectionObserver' ref={lastEnd}></div>
       </div>
 }
@@ -152,17 +164,20 @@ function DogListCover(props:propsTypeDogListCover){
 function RootWrap(){
   const [targetUrl, setTargetUrl] = useState<any[]>(['http://localhost:2080/listVer2?numOfRows=10&numOfPage=',''])
   const [dogList, setDogList] = useState<any[]>([])
+  const [moreInfoButtonFirstTime,setMoreInfoButtonFirstTime] = useState(true)
   const changeDogList: React.Dispatch<React.SetStateAction<any[]>> = (value) => {
     setDogList(value);
   };
   const changeTargetUrl: React.Dispatch<React.SetStateAction<any[]>> = (value) => {
     setTargetUrl(value);
   };
+  const changeMoreInfoButtonFirstTime: React.Dispatch<React.SetStateAction<any>> = (value) => {
+    setMoreInfoButtonFirstTime(value);
+  };
   return <div className="Main">
     <Header />
-    <SearchBarCover setTargetUrl={changeTargetUrl} setDogList={changeDogList}/>
-    <FilterButtonCover/>
-    <DogListCover setTargetUrl={changeTargetUrl} targetUrl={targetUrl} dogList={dogList} setDogList={changeDogList} />
+    <SearchBarCover setTargetUrl={changeTargetUrl} setDogList={changeDogList} setMoreInfoButtonFirstTime={changeMoreInfoButtonFirstTime}/>
+    <DogListCover setTargetUrl={changeTargetUrl} targetUrl={targetUrl} dogList={dogList} setDogList={changeDogList} setMoreInfoButtonFirstTime={changeMoreInfoButtonFirstTime} moreInfoButtonFirstTime={moreInfoButtonFirstTime}/>
   </div>
 ;
 }
