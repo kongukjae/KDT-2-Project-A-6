@@ -1,10 +1,17 @@
 const express = require('express'); 
 const cors = require('cors');
+const path = require("path");
 const fs = require('fs');
 const app = express();
 app.use(cors({
     origin: '*',
 }));
+
+app.use(express.static(path.join(__dirname, '../examplepage/build')));
+
+app.get('/', function (req, res) {
+  req.sendFile(path.join(__dirname, '../examplepage/build/index.html'));
+});
 
 function includeCheck(targetText, keyWord){
     includeFlag = false
